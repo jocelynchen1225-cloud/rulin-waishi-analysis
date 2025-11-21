@@ -1,8 +1,7 @@
-# 忽略无关警告（干净终端输出）
 import warnings
 warnings.filterwarnings('ignore')
 
-# 导入所需库
+
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -10,30 +9,24 @@ import seaborn as sns
 import folium
 from streamlit_folium import st_folium
 
-# --------------------------
-# 1. 页面配置（标题、图标）
-# --------------------------
+
 st.set_page_config(
     page_title="《儒林外史》1-20回地点-人物-活动分析",
     page_icon="📜",
     layout="wide"  # 宽屏显示，方便可视化
 )
 
-# 页面标题和说明
+
 st.title("📜《儒林外史》1-20回地点-人物-活动交互分析")
 st.markdown("""
 本应用基于中国哲学书电子化计划（Ctext）文本，统计1-20回核心地点出现频次、分析人物活动类型分布，并通过GIS地图可视化地理特征。
 数据来源：https://ctext.org/rulin-waishi
 """)
 
-# --------------------------
-# 2. 读取数据（100%匹配你的表头，直接读取Excel）
-# --------------------------
-@st.cache_data  # 缓存数据，加快加载速度
+@st.cache_data  
 def load_data():
-    # 此处填写你的Excel文件完整路径（Mac系统示例，根据实际路径修改）
-    df = pd.read_excel("rulin_waishi_data.xlsx")
-    # 数据预处理：确保关键列格式正确（避免可视化报错）
+   
+    df = pd.read_excel("/Users/jocelynchen/Desktop/CHC assignment_2/rulin_waishi_data.xlsx")
     df["章回"] = pd.to_numeric(df["章回"], errors="coerce").fillna(0).astype(int)
     df["北纬"] = pd.to_numeric(df["北纬"], errors="coerce").fillna(0)
     df["东经"] = pd.to_numeric(df["东经"], errors="coerce").fillna(0)
@@ -41,31 +34,27 @@ def load_data():
     df["总频次"] = pd.to_numeric(df["总频次"], errors="coerce").fillna(0).astype(int)
     return df
 
-# 加载数据并显示基本信息
+
 df = load_data()
 st.subheader("📊 数据概览")
 st.write(f"共统计 {len(df)} 条有效记录，覆盖 {df['地点'].nunique()} 个核心地点、{df['人物'].nunique()} 位关键人物")
-# 数据概览显示所有表头列，顺序与Excel一致
 st.dataframe(df[["章回", "地点", "北纬", "东经", "人物", "活动类型", "活动描述", "原文摘录", "本章频次", "总频次"]].head(10), width='stretch')
 
-# --------------------------
-# 3. 交互式筛选器（适配你的表头）
-# --------------------------
 st.sidebar.header("🔍 筛选条件")
 selected_location = st.sidebar.multiselect(
     "选择地点",
     options=df["地点"].unique(),
-    default=df["地点"].unique()  # 默认选中所有地点
+    default=df["地点"].unique()  
 )
 selected_activity = st.sidebar.multiselect(
     "选择活动类型",
     options=df["活动类型"].unique(),
-    default=df["活动类型"].unique()  # 默认选中所有活动类型
+    default=df["活动类型"].unique()  
 )
 selected_chapter = st.sidebar.multiselect(
     "选择章回",
     options=df["章回"].unique(),
-    default=df["章回"].unique()  # 默认选中所有章回
+    default=df["章回"].unique()  
 )
 
 # 根据筛选条件过滤数据
@@ -83,12 +72,8 @@ st.subheader("📈 核心地点总出现频次对比")
 location_freq = filtered_df.groupby("地点")["总频次"].first().sort_values(ascending=False)
 
 # 设置中文字体（Mac系统适配，避免中文乱码）
-plt.switch_backend('Agg')
-
-# 字体设置：只保留服务器必有的 Unicode 字体，不找本地字体
 plt.rcParams['font.sans-serif'] = ['Arial Unicode MS', 'Songti SC', 'DejaVu Sans']
 plt.rcParams['axes.unicode_minus'] = False
-
 
 # 绘制柱状图（修复palette警告，保持颜色效果）
 fig, ax = plt.subplots(figsize=(10, 6))
@@ -111,6 +96,17 @@ for i, v in enumerate(location_freq.values):
 
 st.pyplot(fig)
 
+# --------------------------
+# 5. 可视化2：地点-活动类型分布（堆叠柱状图）
+# --------------------------
+st.subheader("📊 各地点活动类型分布")
+# 构建活动类型交叉表（按本章频次求和）
+activity_cross = pd.crosstab(
+    filtered_df["地点"], 
+    filtered_df["活动类型"], 
+    values=filtered_df["本章频次"], 
+    aggfunc="sum"
+).fillna(0)
 
 # 绘制堆叠柱状图
 fig2, ax2 = plt.subplots(figsize=(12, 7))
