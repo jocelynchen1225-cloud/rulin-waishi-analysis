@@ -6,5 +6,4 @@ folium
 streamlit-folium
 openpyxl  # 读取Excel必须的库，避免部署后读不到数据
 lxml
-fonttools
-matplotlib-font-manager
+
