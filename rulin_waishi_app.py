@@ -86,30 +86,31 @@ location_freq = filtered_df.groupby("地点")["总频次"].first().sort_values(a
 plt.switch_backend('Agg')
 
 # 字体设置：只保留服务器必有的 Unicode 字体，不找本地字体
-plt.rcParams['font.sans-serif'] = ['Arial Unicode MS', 'DejaVu Sans', 'sans-serif']
-plt.rcParams['axes.unicode_minus'] = False  # 解决负号显示问题
+plt.rcParams['font.sans-serif'] = ['Arial Unicode MS', 'Songti SC', 'DejaVu Sans']
+plt.rcParams['axes.unicode_minus'] = False
 
 
-
-# 在柱子上标注具体数值
-# 绘制柱状图（优化中文显示）
-fig, ax = plt.subplots(figsize=(12, 6))  # 加宽图的宽度，给中文标签留空间
+# 绘制柱状图（修复palette警告，保持颜色效果）
+fig, ax = plt.subplots(figsize=(10, 6))
 sns.barplot(
     x=location_freq.index, 
     y=location_freq.values, 
     ax=ax, 
-    hue=location_freq.index,
+    hue=location_freq.index,  # 新增hue参数，消除警告
     palette="viridis", 
-    legend=False
+    legend=False  # 关闭多余图例
 )
 ax.set_title("各地点总出现频次（10-20回）", fontsize=14)
 ax.set_xlabel("地点", fontsize=12)
 ax.set_ylabel("总频次", fontsize=12)
-ax.tick_params(axis='x', rotation=0, labelsize=10)  # 中文水平显示，字体加大
+ax.tick_params(axis='x', rotation=45)  # 地点名称旋转45度，避免重叠
 
 # 在柱子上标注具体数值
 for i, v in enumerate(location_freq.values):
-    ax.text(i, v + 0.1, str(int(v)), ha='center', va='bottom', fontsize=9)
+    ax.text(i, v + 0.1, str(int(v)), ha='center', va='bottom')
+
+st.pyplot(fig)
+
 
 # 绘制堆叠柱状图
 fig2, ax2 = plt.subplots(figsize=(12, 7))
