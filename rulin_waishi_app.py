@@ -83,8 +83,8 @@ st.subheader("📈 核心地点总出现频次对比")
 location_freq = filtered_df.groupby("地点")["总频次"].first().sort_values(ascending=False)
 
 # 设置中文字体（Mac系统适配，避免中文乱码）
-plt.rcParams['font.sans-serif'] = ['Arial Unicode MS', 'Songti SC', 'DejaVu Sans']
-plt.rcParams['axes.unicode_minus'] = False
+plt.rcParams['font.sans-serif'] = ['DejaVu Sans', 'Arial Unicode MS', 'SimHei', 'WenQuanYi Zen Hei']
+plt.rcParams['axes.unicode_minus'] = False  # 解决负号显示问题
 
 # 绘制柱状图（修复palette警告，保持颜色效果）
 fig, ax = plt.subplots(figsize=(10, 6))
