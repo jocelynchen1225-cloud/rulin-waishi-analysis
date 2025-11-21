@@ -27,7 +27,7 @@ st.markdown("""
 @st.cache_data  
 def load_data():
    
-    df = pd.read_excel("/Users/jocelynchen/Desktop/CHC assignment_2/rulin_waishi_data.xlsx")
+    df = pd.read_excel("rulin_waishi_data.xlsx", engine="openpyxl")
     df["章回"] = pd.to_numeric(df["章回"], errors="coerce").fillna(0).astype(int)
     df["北纬"] = pd.to_numeric(df["北纬"], errors="coerce").fillna(0)
     df["东经"] = pd.to_numeric(df["东经"], errors="coerce").fillna(0)
