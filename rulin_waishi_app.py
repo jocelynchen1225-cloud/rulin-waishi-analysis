@@ -32,7 +32,7 @@ st.markdown("""
 @st.cache_data  # 缓存数据，加快加载速度
 def load_data():
     # 此处填写你的Excel文件完整路径（Mac系统示例，根据实际路径修改）
-    df = pd.read_excel("/Users/jocelynchen/Desktop/CHC assignment_2/rulin_waishi_data.xlsx")
+    df = pd.read_excel("rulin_waishi_data.xlsx")
     # 数据预处理：确保关键列格式正确（避免可视化报错）
     df["章回"] = pd.to_numeric(df["章回"], errors="coerce").fillna(0).astype(int)
     df["北纬"] = pd.to_numeric(df["北纬"], errors="coerce").fillna(0)
